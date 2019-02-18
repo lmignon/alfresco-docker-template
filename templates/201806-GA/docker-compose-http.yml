@@ -4,7 +4,7 @@ services:
     http:
         build: ./http
         ports:
-          - 80:80 #HTTP
+          - 8080:80 #HTTP
         links:
           - alfresco
           - share
@@ -18,7 +18,7 @@ services:
                 -Ddb.driver=org.postgresql.Driver
                 -Ddb.username=alfresco
                 -Ddb.password=alfresco
-                -Ddb.url=jdbc:postgresql://postgres:5432/alfresco
+                -Ddb.url=jdbc:postgresql://postgres:5433/alfresco
                 -Dsolr.host=solr6
                 -Dsolr.port=8983
                 -Dsolr.secureComms=none
@@ -28,10 +28,10 @@ services:
                 "
         volumes:
           - ./data/alf-repo-data:/usr/local/tomcat/alf_data
-        ports:
-          - 21:2121   #FTP port
-          - 25:2525   #SMTP port
-          - 143:1143  #IMAP port
+#        ports:
+#          - 21:2121   #FTP port
+#          - 25:2525   #SMTP port
+#          - 143:1143  #IMAP port
 #          - 445:1145      #CIFS
 #          - 137:1137/udp  #CIFS
 #          - 138:1138/udp  #CIFS
@@ -50,11 +50,11 @@ services:
             - POSTGRES_PASSWORD=alfresco
             - POSTGRES_USER=alfresco
             - POSTGRES_DB=alfresco
-        command: postgres -c max_connections=300 -c log_min_messages=LOG
+        command: postgres -c max_connections=300 -c log_min_messages=LOG -p 5433
         volumes:
            - ./data/postgres-data:/var/lib/postgresql/data
         ports:
-            - 5432:5432
+            - 5433:5432
 
     solr6:
         image: alfresco/alfresco-search-services:1.1.1

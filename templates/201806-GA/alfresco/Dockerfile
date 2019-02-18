@@ -3,27 +3,29 @@ FROM alfresco/alfresco-content-repository-community:6.0.7-ga
 # Add services configuration to alfresco-global.properties
 RUN echo -e '\n\
 alfresco.host=localhost\n\
-alfresco.port=443\n\
-alfresco.protocol=https\n\
+alfresco.port=8080\n\
+alfresco.protocol=http\n\
 \n\
 share.host=localhost\n\
-share.port=443\n\
-share.protocol=https\n\
+share.port=8080\n\
+share.protocol=http\n\
 \n\
-ftp.enabled=true\n\
+ftp.enabled=false\n\
 ftp.port=2121\n\
 \n\
-imap.server.enabled=true\n\
+imap.server.enabled=false\n\
 imap.server.port=1143\n\
 \n\
-email.server.enabled=true\n\
+email.server.enabled=false\n\
 email.server.port=2525\n\
 \n\
-cifs.enabled=true\n\
+cifs.enabled=false\n\
 cifs.tcpipSMB.port=1445\n\
 cifs.netBIOSSMB.namePort=1137\n\
 cifs.netBIOSSMB.datagramPort=1138\n\
 cifs.netBIOSSMB.sessionPort=1139\n\
+\n\
+alfresco.restApi.basicAuthScheme=true\n\
 \n\
 ' >> /usr/local/tomcat/shared/classes/alfresco-global.properties
 
@@ -59,5 +61,13 @@ COPY modules/jars $TOMCAT_DIR/webapps/alfresco/WEB-INF/lib
 
 RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
             $TOMCAT_DIR/amps $TOMCAT_DIR/webapps/alfresco -directory -nobackup -force
+
+COPY assets/cors-web.xml $TOMCAT_DIR
+COPY assets/splicewebxml.sh $TOMCAT_DIR
+
+RUN chmod +x $TOMCAT_DIR/splicewebxml.sh
+RUN $TOMCAT_DIR/splicewebxml.sh cors-web.xml $TOMCAT_DIR/webapps/alfresco
+
+
 
 EXPOSE 2121 1143 2525 1445 1137/udp 1138/udp 1139
